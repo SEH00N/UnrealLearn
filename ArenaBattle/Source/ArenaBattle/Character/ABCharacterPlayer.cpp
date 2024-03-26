@@ -40,11 +40,18 @@ AABCharacterPlayer::AABCharacterPlayer()
 	static ConstructorHelpers::FObjectFinder<UInputAction> ChangeControlActionReference(TEXT("/Game/ArenaBattle/Input/Actions/IA_ChangeControl.IA_ChangeControl"));
 	if (ChangeControlActionReference.Object)
 		ChangeControlAction = ChangeControlActionReference.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> AttackActionReference(TEXT("/Game/ArenaBattle/Input/Actions/IA_Attack.IA_Attack"));
+	if (AttackActionReference.Object)
+		AttackAction = AttackActionReference.Object;
+
+	CurrentCharacterControlType = ECharacterControlType::Quater;
 }
 
 void AABCharacterPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+	SetCharacterControlType(CurrentCharacterControlType);
 }
 
 void AABCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -58,6 +65,7 @@ void AABCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	EnhancedInputComponent->BindAction(ShoulderLookAction, ETriggerEvent::Triggered, this, &AABCharacterPlayer::ShoulderLook);
 	EnhancedInputComponent->BindAction(QuaterMoveAction, ETriggerEvent::Triggered, this, &AABCharacterPlayer::QuaterMove);
 	EnhancedInputComponent->BindAction(ChangeControlAction, ETriggerEvent::Triggered, this, &AABCharacterPlayer::ChangeCharacterControl);
+	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AABCharacterPlayer::Attack);
 }
 
 void AABCharacterPlayer::SetCharacterControlData(const UABCharacterControlData* CharacterControlData)
@@ -71,6 +79,26 @@ void AABCharacterPlayer::SetCharacterControlData(const UABCharacterControlData* 
 	CameraBoom->bInheritYaw = CharacterControlData->bInheritYaw;
 	CameraBoom->bInheritRoll = CharacterControlData->bInheritRoll;
 	CameraBoom->bDoCollisionTest = CharacterControlData->bDoCollisionTest;
+}
+
+void AABCharacterPlayer::SetCharacterControlType(ECharacterControlType NewCharacterControlType)
+{
+	UABCharacterControlData* NewCharacterControlData = CharacterControlManager[NewCharacterControlType];
+	check(NewCharacterControlData);
+
+	SetCharacterControlData(NewCharacterControlData);
+
+	APlayerController* PlayerController = CastChecked<APlayerController>(GetController());
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+	if (Subsystem)
+	{
+		Subsystem->ClearAllMappings();
+		UInputMappingContext* NewMappingContext = NewCharacterControlData->InputMappingContext;
+		if (NewMappingContext)
+			Subsystem->AddMappingContext(NewMappingContext, 0);
+	}
+
+	CurrentCharacterControlType = NewCharacterControlType;
 }
 
 void AABCharacterPlayer::ShoulderMove(const FInputActionValue& Value)
@@ -95,10 +123,37 @@ void AABCharacterPlayer::ShoulderLook(const FInputActionValue& Value)
 
 void AABCharacterPlayer::QuaterMove(const FInputActionValue& Value)
 {
+	FVector2D MovementVector = Value.Get<FVector2D>();
+	//float InputSizeSquared = MovementVector.SquaredLength();
+	//float MovementVectorSize = 1.0f;
+	//float MovementVectorSizeSquared = MovementVector.SquaredLength();
 
+	//if (MovementVectorSizeSquared > 1.0f)
+	//{
+	//	MovementVector.Normalize();
+	//	MovementVectorSizeSquared = 1.0f;
+	//}
+	//else
+	//{
+	//	MovementVectorSize = FMath::Sqrt(MovementVectorSizeSquared);
+	//}
+
+	//FVector MoveDirection = FVector(MovementVector.X, MovementVector.Y, 0.0);
+	//GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
+	//AddMovementInput(MoveDirection, MovementVectorSize);
+	 
+	MovementVector.Normalize();
+	FVector MoveDirection = FVector(MovementVector.X, MovementVector.Y, 0.0);
+	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
+	AddMovementInput(MoveDirection, 1.0f);
 }
 
 void AABCharacterPlayer::ChangeCharacterControl()
 {
+	SetCharacterControlType((CurrentCharacterControlType == ECharacterControlType::Shoulder) ? ECharacterControlType::Quater : ECharacterControlType::Shoulder);
+}
 
+void AABCharacterPlayer::Attack()
+{
+	ProcessComboCommand();
 }

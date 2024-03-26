@@ -25,6 +25,9 @@ protected:
 protected:
 	virtual void SetCharacterControlData(const class UABCharacterControlData* CharacterControlData) override;
 
+	void SetCharacterControlType(ECharacterControlType NewCharacterControlType);
+	ECharacterControlType CurrentCharacterControlType;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, Meta = (AllowPrivateAccess="true"))
 	TObjectPtr<class USpringArmComponent> CameraBoom;
@@ -48,10 +51,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	TObjectPtr<class UInputAction> ChangeControlAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	TObjectPtr<class UInputAction> AttackAction;
+
 	void ShoulderMove(const FInputActionValue& Value);
 	void ShoulderLook(const FInputActionValue& Value);
 
 	void QuaterMove(const FInputActionValue& Value);
 
 	void ChangeCharacterControl();
+	void Attack();
 };

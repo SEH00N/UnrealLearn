@@ -1,0 +1,22 @@
+{
+	"version": 1,
+	"changelists": [
+		{
+			"guid": "00000000000000000000000000000000",
+			"description": "Default Uncontrolled Changelist",
+			"files": [
+				"D:/GitHub/UnrealLearn/Retargeting/Content/InfinityBladeWarriors/RetargetedAnimation/IKRig_Character.uasset",
+				"D:/GitHub/UnrealLearn/Retargeting/Content/InfinityBladeWarriors/RetargetedAnimation/IKRig_Quin.uasset",
+				"D:/GitHub/UnrealLearn/Retargeting/Content/InfinityBladeWarriors/RetargetedAnimation/IKRetargeter_FromQuin.uasset",
+				"D:/GitHub/UnrealLearn/Retargeting/Content/InfinityBladeWarriors/RetargetedAnimation/AB_Fall_Loop.uasset",
+				"D:/GitHub/UnrealLearn/Retargeting/Content/InfinityBladeWarriors/RetargetedAnimation/AB_Idle.uasset",
+				"D:/GitHub/UnrealLearn/Retargeting/Content/InfinityBladeWarriors/RetargetedAnimation/AB_Jump.uasset",
+				"D:/GitHub/UnrealLearn/Retargeting/Content/InfinityBladeWarriors/RetargetedAnimation/AB_Land.uasset",
+				"D:/GitHub/UnrealLearn/Retargeting/Content/InfinityBladeWarriors/RetargetedAnimation/AB_Run_Fwd.uasset",
+				"D:/GitHub/UnrealLearn/Retargeting/Content/InfinityBladeWarriors/RetargetedAnimation/AB_T_Pose.uasset",
+				"D:/GitHub/UnrealLearn/Retargeting/Content/InfinityBladeWarriors/RetargetedAnimation/AB_Walk_Fwd.uasset",
+				"D:/GitHub/UnrealLearn/Retargeting/Content/InfinityBladeWarriors/RetargetedAnimation/AB_Walk_InPlace.uasset"
+			]
+		}
+	]
+}

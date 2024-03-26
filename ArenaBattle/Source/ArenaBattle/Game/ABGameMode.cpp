@@ -6,7 +6,7 @@
 
 AABGameMode::AABGameMode()
 {
-	static ConstructorHelpers::FClassFinder<APawn> ABCharacterPlayerClassReference(TEXT("/Script/ArenaBattle.ABCharacterPlayer"));
+	static ConstructorHelpers::FClassFinder<APawn> ABCharacterPlayerClassReference(TEXT("/Game/ArenaBattle/Blueprint/BP_ABCharacterPlayer.BP_ABCharacterPlayer_C"));
 	if (ABCharacterPlayerClassReference.Class)
 		DefaultPawnClass = ABCharacterPlayerClassReference.Class;
 
