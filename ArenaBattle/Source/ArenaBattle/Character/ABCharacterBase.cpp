@@ -7,6 +7,12 @@
 #include "ABCharacterControlData.h"
 #include "ABComboActionData.h"
 #include "Physics/ABCollision.h"
+#include "Engine/DamageEvents.h"
+#include <kismet/GameplayStatics.h>
+#include "CharacterStat/ABCharacterStatComponent.h"
+#include "UI/ABWidgetComponent.h"
+#include "UI/ABUserWidget.h"
+#include "UI/ABHPBarWidget.h"
 
 AABCharacterBase::AABCharacterBase()
 {
@@ -48,6 +54,50 @@ AABCharacterBase::AABCharacterBase()
     static ConstructorHelpers::FObjectFinder<UABCharacterControlData> QuaterDataReferece(TEXT("/Game/ArenaBattle/CharacterControl/ABC_Quater.ABC_Quater"));
     if (QuaterDataReferece.Object)
         CharacterControlManager.Add(ECharacterControlType::Quater, QuaterDataReferece.Object);
+
+    static ConstructorHelpers::FObjectFinder<UAnimMontage> ComboActionMontageReference(TEXT("/Game/ArenaBattle/Animation/AM_ComboAttack.AM_ComboAttack"));
+    if (ComboActionMontageReference.Object)
+        ComboActionMontage = ComboActionMontageReference.Object;
+
+    static ConstructorHelpers::FObjectFinder<UAnimMontage> DeadActionMotage(TEXT("/Game/ArenaBattle/Animation/AM_Dead.AM_Dead"));
+    if (DeadActionMotage.Object)
+        DeadMontage = DeadActionMotage.Object;
+
+    static ConstructorHelpers::FObjectFinder<UABComboActionData> ComboActionDataReference(TEXT("/Game/ArenaBattle/CharacterAction/ABComboActionData.ABComboActionData"));
+    if (ComboActionDataReference.Object)
+        ComboActionData = ComboActionDataReference.Object;
+
+    Stat = CreateDefaultSubobject<UABCharacterStatComponent>(TEXT("Stat"));
+    HPBar = CreateDefaultSubobject<UABWidgetComponent>(TEXT("Widget"));
+    HPBar->SetupAttachment(GetMesh());
+    HPBar->SetRelativeLocation(FVector(0.0f, 0.0f, 225.0f));
+
+    static ConstructorHelpers::FClassFinder<UUserWidget> HPBarWidgetReference(TEXT("/Game/ArenaBattle/UI/WBP_HPBar.WBP_HPBar_C"));
+    if (HPBarWidgetReference.Class)
+    {
+        HPBar->SetWidgetClass(HPBarWidgetReference.Class);
+        HPBar->SetWidgetSpace(EWidgetSpace::Screen);
+        HPBar->SetDrawSize(FVector2D(150.0f, 15.0f));
+        HPBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    }
+}
+
+void AABCharacterBase::PostInitializeComponents()
+{
+    Super::PostInitializeComponents();
+    Stat->OnHPZeroEvent.AddUObject(this, &AABCharacterBase::SetDead);
+}
+
+void AABCharacterBase::SetUpCharacterWidget(UABUserWidget* InUserWidget)
+{
+    UABHPBarWidget* HPBarWidget = Cast<UABHPBarWidget>(InUserWidget);
+    if (HPBarWidget)
+    {
+        HPBarWidget->SetMaxHP(Stat->GetMaxHP());
+        HPBarWidget->UpdateHPBar(Stat->GetCurrentHP());
+
+        Stat->OnHPChangedEvent.AddUObject(HPBarWidget, &UABHPBarWidget::UpdateHPBar);
+    }
 }
 
 void AABCharacterBase::AttackHitCheck()
@@ -63,7 +113,9 @@ void AABCharacterBase::AttackHitCheck()
     bool HitDetected = GetWorld()->SweepSingleByChannel(OutHitResult, Start, End, FQuat::Identity, CCHANNEL_ABACTION, FCollisionShape::MakeSphere(AttackRadius), Params);
     if (HitDetected)
     {
-
+        FDamageEvent DamageEvent;
+        OutHitResult.GetActor()->TakeDamage(AttackDamage, DamageEvent, GetController(), this);
+        //UGameplayStatics::ApplyDamage(OutHitResult.GetActor(), AttackDamage, GetController(), this, nullptr);
     }
 
 #if ENABLE_DRAW_DEBUG
@@ -73,6 +125,29 @@ void AABCharacterBase::AttackHitCheck()
 
     DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, AttackRadius, FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(), DrawColor, false, 5.0f);
 #endif
+}
+
+float AABCharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+    Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+    Stat->ApplyDamage(DamageAmount);
+
+    return DamageAmount;
+}
+
+void AABCharacterBase::SetDead()
+{
+    GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+    PlayDeadAnimation();
+    SetActorEnableCollision(false);
+    HPBar->SetHiddenInGame(true);
+}
+
+void AABCharacterBase::PlayDeadAnimation()
+{
+    UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+    AnimInstance->StopAllMontages(0.0f);
+    AnimInstance->Montage_Play(DeadMontage, 1.0f);
 }
 
 void AABCharacterBase::SetCharacterControlData(const UABCharacterControlData* CharacterControlData)
