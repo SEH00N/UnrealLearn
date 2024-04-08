@@ -7,13 +7,17 @@
 
 AABCharacterNonPlayer::AABCharacterNonPlayer()
 {
+	// Capsule
 	GetCapsuleComponent()->SetCollisionProfileName(CPROFILE_ABCAPSULE);
 
+	// Mesh
 	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterMeshReference(TEXT("/Game/InfinityBladeWarriors/Character/CompleteCharacters/SK_CharM_Cardboard.SK_CharM_Cardboard"));
-	if (CharacterMeshReference.Object)
-		GetMesh()->SetSkeletalMesh(CharacterMeshReference.Object);
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterMeshRef(TEXT("/Game/InfinityBladeWarriors/Character/CompleteCharacters/SK_CharM_Tusk.SK_CharM_Tusk"));
+	if (CharacterMeshRef.Object)
+	{
+		GetMesh()->SetSkeletalMesh(CharacterMeshRef.Object);
+	}
 }
 
 void AABCharacterNonPlayer::SetDead()
@@ -21,12 +25,10 @@ void AABCharacterNonPlayer::SetDead()
 	Super::SetDead();
 
 	FTimerHandle DeadTimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(
-		DeadTimerHandle, 
-		FTimerDelegate::CreateLambda([&]() {
+	GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
+		[&]()
+		{
 			Destroy();
 		}), 
-		DeadEventDelayTime,
-		false
-	);
+		DeadEventDelayTime, false);
 }

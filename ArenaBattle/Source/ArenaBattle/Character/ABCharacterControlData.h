@@ -35,13 +35,13 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = SpringArm)
 	float TargetArmLength;
-	
+
 	UPROPERTY(EditAnywhere, Category = SpringArm)
 	FRotator RelativeRotation;
 
 	UPROPERTY(EditAnywhere, Category = SpringArm)
 	uint32 bUsePawnControlRotation : 1;
-	
+
 	UPROPERTY(EditAnywhere, Category = SpringArm)
 	uint32 bInheritPitch : 1;
 
@@ -53,6 +53,4 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = SpringArm)
 	uint32 bDoCollisionTest : 1;
-
-
 };

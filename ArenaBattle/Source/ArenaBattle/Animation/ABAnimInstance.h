@@ -13,7 +13,7 @@ UCLASS()
 class ARENABATTLE_API UABAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
-	
+
 public:
 	UABAnimInstance();
 
@@ -38,8 +38,8 @@ protected:
 	uint8 bIsIdle : 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
-	float MovingThreshold;
-	
+	float MovingThreshould;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
 	uint8 bIsFalling : 1;
 
@@ -47,5 +47,5 @@ protected:
 	uint8 bIsJumping : 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
-	float JumpingThreshold;
+	float JumpingThreshould;
 };

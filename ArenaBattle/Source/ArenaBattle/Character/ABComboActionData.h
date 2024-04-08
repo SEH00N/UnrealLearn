@@ -13,7 +13,7 @@ UCLASS()
 class ARENABATTLE_API UABComboActionData : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
-
+	
 public:
 	UABComboActionData();
 
@@ -29,4 +29,5 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Name)
 	TArray<float> EffectiveFrameCount;
+
 };

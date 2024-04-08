@@ -8,10 +8,13 @@ void UAnimNotify_AttackHitCheck::Notify(USkeletalMeshComponent* MeshComp, UAnimS
 {
 	Super::Notify(MeshComp, Animation, EventReference);
 
-	if(MeshComp)
+	if (MeshComp)
 	{
 		IABAnimationAttackInterface* AttackPawn = Cast<IABAnimationAttackInterface>(MeshComp->GetOwner());
+
 		if (AttackPawn)
+		{
 			AttackPawn->AttackHitCheck();
+		}
 	}
 }

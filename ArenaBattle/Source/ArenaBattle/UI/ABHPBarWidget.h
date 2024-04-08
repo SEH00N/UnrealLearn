@@ -16,8 +16,6 @@ class ARENABATTLE_API UABHPBarWidget : public UABUserWidget
 	
 public:
 	UABHPBarWidget(const FObjectInitializer& ObjectInitializer);
-
-protected:
 	virtual void NativeConstruct() override;
 
 public:
@@ -30,4 +28,6 @@ protected:
 
 	UPROPERTY()
 	float MaxHP;
+
+
 };

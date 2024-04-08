@@ -12,17 +12,25 @@ AABFountain::AABFountain()
 	Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
 	RootComponent = Body;
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> BodyMeshReference(TEXT("/Game/ArenaBattle/Environment/Props/SM_Plains_Castle_Fountain_01.SM_Plains_Castle_Fountain_01"));
-	if (BodyMeshReference.Object)
-		Body->SetStaticMesh(BodyMeshReference.Object);
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> BodyMeshRef(TEXT("/Game/ArenaBattle/Environment/Props/SM_Plains_Castle_Fountain_01.SM_Plains_Castle_Fountain_01"));
+
+	if (BodyMeshRef.Object)
+	{
+		Body->SetStaticMesh(BodyMeshRef.Object);
+	}
 
 	Water = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Water"));
 	Water->SetupAttachment(Body);
 	Water->SetRelativeLocation(FVector(0.0f, 0.0f, 132.0f));
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> WaterMeshReference(TEXT("/Game/ArenaBattle/Environment/Props/SM_Plains_Fountain_02.SM_Plains_Fountain_02"));
-	if (WaterMeshReference.Object)
-		Water->SetStaticMesh(WaterMeshReference.Object);
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> WaterMeshRef(TEXT("/Game/ArenaBattle/Environment/Props/SM_Plains_Fountain_02.SM_Plains_Fountain_02"));
+
+	if (WaterMeshRef.Object)
+	{
+		Water->SetStaticMesh(WaterMeshRef.Object);
+	}
+
+
 }
 
 // Called when the game starts or when spawned

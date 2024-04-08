@@ -2,13 +2,13 @@
 
 
 #include "Animation/ABAnimInstance.h"
-#include "GameFramework/Character.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include <GameFramework/Character.h>
+#include <GameFramework/CharacterMovementComponent.h>
 
 UABAnimInstance::UABAnimInstance()
 {
-	MovingThreshold = 3.0f;
-	JumpingThreshold = 50.0f;
+	MovingThreshould = 3.0f;
+	JumpingThreshould = 100.0f;
 }
 
 void UABAnimInstance::NativeInitializeAnimation()
@@ -25,13 +25,13 @@ void UABAnimInstance::NativeInitializeAnimation()
 void UABAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
-	
+
 	if (Movement)
 	{
 		Velocity = Movement->Velocity;
 		GroundSpeed = Velocity.Size2D();
-		bIsIdle = GroundSpeed < MovingThreshold;
+		bIsIdle = GroundSpeed < MovingThreshould;
 		bIsFalling = Movement->IsFalling();
-		bIsJumping = bIsFalling & (Velocity.Z > JumpingThreshold);
+		bIsJumping = bIsFalling & (Velocity.Z > JumpingThreshould);
 	}
 }

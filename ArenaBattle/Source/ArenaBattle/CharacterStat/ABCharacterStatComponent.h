@@ -7,8 +7,7 @@
 #include "ABCharacterStatComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnHPZeroDelegate)
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnHPChangedDelegate, float /*Current HP*/)
-
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnHPChangedDelegate, float)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ARENABATTLE_API UABCharacterStatComponent : public UActorComponent
@@ -16,18 +15,12 @@ class ARENABATTLE_API UABCharacterStatComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:	
+	// Sets default values for this component's properties
 	UABCharacterStatComponent();
 
 protected:
+	// Called when the game starts
 	virtual void BeginPlay() override;
-
-public:	
-	FORCEINLINE float GetMaxHP() { return MaxHP; }
-	FORCEINLINE float GetCurrentHP() { return CurrentHP; }
-
-public:
-	float ApplyDamage(float InDamage);
-	void SetHP(float NewHP);
 
 public:
 	FOnHPZeroDelegate OnHPZeroEvent;
@@ -39,4 +32,11 @@ protected:
 
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
 	float CurrentHP;
+
+public:	
+	FORCEINLINE float GetMaxHP() { return MaxHP; }
+	FORCEINLINE float GetCurrentHP() { return CurrentHP; }
+
+	void SetHP(float NewHP);
+	float ApplyDamage(float InDamage);
 };
