@@ -11,6 +11,8 @@
 #include "CharacterStat/ABCharacterStatComponent.h"
 #include "UI/ABWidgetComponent.h"
 #include "UI/ABHPBarWidget.h"
+#include "Item/ABItemData.h"
+#include "Item/ABWeaponItemData.h"
 #include <Kismet/GameplayStatics.h>
 
 
@@ -99,13 +101,51 @@ AABCharacterBase::AABCharacterBase()
 		HPBar->SetDrawSize(FVector2D(150.0f, 15.0f));
 		HPBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+
+	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
+	Weapon->SetupAttachment(GetMesh(), TEXT("hand_rSocket"));
+
+	TakeItemActions.Insert(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &AABCharacterBase::EquipWeapon)), (uint8)EItemType::Weapon);
+	TakeItemActions.Insert(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &AABCharacterBase::DrinkPotion)), (uint8)EItemType::Potion);
+	TakeItemActions.Insert(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &AABCharacterBase::ReadScroll)), (uint8)EItemType::Scroll);
 }
 
 void AABCharacterBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	
+
 	Stat->OnHPZeroEvent.AddUObject(this, &AABCharacterBase::SetDead);
+}
+
+void AABCharacterBase::TakeItem(UABItemData* InItemData)
+{
+	if (InItemData)
+	{
+		TakeItemActions[(uint8)InItemData->Type].ItemDelegate.ExecuteIfBound(InItemData);
+	}
+}
+
+void AABCharacterBase::EquipWeapon(UABItemData* InItemData)
+{
+	UE_LOG(LogTemp, Log, TEXT("Equip Weapon"));
+	UABWeaponItemData* WeaponItemData = Cast<UABWeaponItemData>(InItemData);
+	if (WeaponItemData)
+	{
+		if (WeaponItemData->WeaponMesh.IsPending())
+			WeaponItemData->WeaponMesh.LoadSynchronous();
+		
+		Weapon->SetSkeletalMesh(WeaponItemData->WeaponMesh.Get());
+	}
+}
+
+void AABCharacterBase::DrinkPotion(UABItemData* InItemData)
+{
+	UE_LOG(LogTemp, Log, TEXT("Drink Potion"));
+}
+
+void AABCharacterBase::ReadScroll(UABItemData* InItemData)
+{
+	UE_LOG(LogTemp, Log, TEXT("Read Scroll"));
 }
 
 void AABCharacterBase::SetUpCharacterWidget(UABUserWidget* InUserWidget)
