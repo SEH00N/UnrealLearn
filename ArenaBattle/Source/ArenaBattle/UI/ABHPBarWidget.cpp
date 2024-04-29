@@ -1,31 +1,34 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "UI/ABHPBarWidget.h"
+#include "UI/ABHpBarWidget.h"
 #include "Components/ProgressBar.h"
 #include "Interface/ABCharacterWidgetInterface.h"
 
-UABHPBarWidget::UABHPBarWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+UABHpBarWidget::UABHpBarWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	MaxHP = -1.0f;
+	MaxHp = -1.0f;
 }
 
-void UABHPBarWidget::NativeConstruct()
+void UABHpBarWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	HPProgressBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("PBHPBar")));
-	ensure(HPProgressBar);
 
-	IABCharacterWidgetInterface* characterWidgetInterface = Cast<IABCharacterWidgetInterface>(OwningActor);
-	if (characterWidgetInterface)
-		characterWidgetInterface->SetUpCharacterWidget(this);
+	HpProgressBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("PbHpBar")));
+	ensure(HpProgressBar);
+
+	IABCharacterWidgetInterface* CharacterWidget = Cast<IABCharacterWidgetInterface>(OwningActor);
+	if (CharacterWidget)
+	{
+		CharacterWidget->SetupCharacterWidget(this);
+	}
 }
 
-void UABHPBarWidget::UpdateHPBar(float NewCurrentHP)
+void UABHpBarWidget::UpdateHpBar(float NewCurrentHp)
 {
-	ensure(MaxHP > 0);
-	if (HPProgressBar)
+	ensure(MaxHp > 0.0f);
+	if (HpProgressBar)
 	{
-		HPProgressBar->SetPercent(NewCurrentHP / MaxHP);
+		HpProgressBar->SetPercent(NewCurrentHp / MaxHp);
 	}
 }

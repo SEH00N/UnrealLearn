@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include <GameData/ABCharacterStat.h>
 #include "ABCharacterStatComponent.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnHPZeroDelegate)
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnHPChangedDelegate, float)
+DECLARE_MULTICAST_DELEGATE(FOnHpZeroDelegate)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnHpChangedDelegate, float /*CurrentHp*/)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ARENABATTLE_API UABCharacterStatComponent : public UActorComponent
@@ -21,22 +22,33 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+		
+public:
+	FORCEINLINE float GetCurrentHp() { return CurrentHp; }
+	FORCEINLINE float GetCurrentLevel() { return CurrentLevel; }
+	FORCEINLINE void SetMoidifierStat(const FABCharacterStat& InModifierStat) { ModifierStat = InModifierStat; }
+	FORCEINLINE FABCharacterStat GetTotalStat() const { return BaseStat + ModifierStat; }
+
+	void SetLevelStat(int32 InNewLevel);
+
+
+	void SetHp(float NewHp);
+	float ApplyDamage(float InDamage);
 
 public:
-	FOnHPZeroDelegate OnHPZeroEvent;
-	FOnHPChangedDelegate OnHPChangedEvent;
+	FOnHpZeroDelegate OnHpZero;
+	FOnHpChangedDelegate OnHpChanged;
 
 protected:
-	UPROPERTY(VisibleInstanceOnly, Category = Stat)
-	float MaxHP;
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
+	float CurrentHp;
 
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
-	float CurrentHP;
+	float CurrentLevel;
 
-public:	
-	FORCEINLINE float GetMaxHP() { return MaxHP; }
-	FORCEINLINE float GetCurrentHP() { return CurrentHP; }
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat, Meta=(AllowPrivateAccess="true"))
+	FABCharacterStat BaseStat;
 
-	void SetHP(float NewHP);
-	float ApplyDamage(float InDamage);
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
+	FABCharacterStat ModifierStat;
 };

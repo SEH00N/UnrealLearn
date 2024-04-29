@@ -12,10 +12,11 @@ class ARENABATTLE_API AABItemBox : public AActor
 	GENERATED_BODY()
 	
 public:	
+	// Sets default values for this actor's properties
 	AABItemBox();
 
-public:
-	TObjectPtr<class UBoxComponent> GetTrigger() { return Trigger; }
+protected:
+	virtual void PostInitializeComponents() override;
 
 public:
 	UFUNCTION()
@@ -24,16 +25,18 @@ public:
 	UFUNCTION()
 	void OnEffectFinished(class UParticleSystemComponent* ParticleSystem);
 
+	TObjectPtr<class UBoxComponent> GetTrigger() { return Trigger; }
+
 protected:
-	UPROPERTY(VisibleAnywhere, Category = "Box")
+	UPROPERTY(VisibleAnywhere, Category = Box)
 	TObjectPtr<class UBoxComponent> Trigger;
 
-	UPROPERTY(VisibleAnywhere, Category = "Box")
+	UPROPERTY(VisibleAnywhere, Category = Box)
 	TObjectPtr<class UStaticMeshComponent> Mesh;
 
-	UPROPERTY(VisibleAnywhere, Category = "Box")
+	UPROPERTY(VisibleAnywhere, Category = Box)
 	TObjectPtr<class UParticleSystemComponent> Effect;
 
-	UPROPERTY(EditAnywhere, Category = "Item")
+	UPROPERTY(EditAnywhere, Category = Item)
 	TObjectPtr<class UABItemData> Item;
 };

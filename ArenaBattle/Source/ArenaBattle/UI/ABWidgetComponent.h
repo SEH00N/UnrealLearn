@@ -14,6 +14,6 @@ class ARENABATTLE_API UABWidgetComponent : public UWidgetComponent
 {
 	GENERATED_BODY()
 	
-public:
+protected:
 	virtual void InitWidget() override;
 };

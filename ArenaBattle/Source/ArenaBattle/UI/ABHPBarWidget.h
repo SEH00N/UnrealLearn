@@ -4,30 +4,29 @@
 
 #include "CoreMinimal.h"
 #include "ABUserWidget.h"
-#include "ABHPBarWidget.generated.h"
+#include "ABHpBarWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ARENABATTLE_API UABHPBarWidget : public UABUserWidget
+class ARENABATTLE_API UABHpBarWidget : public UABUserWidget
 {
 	GENERATED_BODY()
 	
 public:
-	UABHPBarWidget(const FObjectInitializer& ObjectInitializer);
+	UABHpBarWidget(const FObjectInitializer& ObjectInitializer);
+
 	virtual void NativeConstruct() override;
 
 public:
-	FORCEINLINE void SetMaxHP(float NewMaxHP) { MaxHP = NewMaxHP; }
-	void UpdateHPBar(float NewCurrentHP);
+	FORCEINLINE void SetMaxHp(float NewMaxHp) { MaxHp = NewMaxHp; }
+	void UpdateHpBar(float NewCurrentHp);
 
 protected:
 	UPROPERTY()
-	TObjectPtr<class UProgressBar> HPProgressBar;
+	TObjectPtr<class UProgressBar> HpProgressBar;
 
 	UPROPERTY()
-	float MaxHP;
-
-
+	float MaxHp;
 };

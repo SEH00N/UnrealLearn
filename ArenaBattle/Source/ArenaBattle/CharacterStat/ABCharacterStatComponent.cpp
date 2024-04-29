@@ -2,43 +2,52 @@
 
 
 #include "CharacterStat/ABCharacterStatComponent.h"
+#include "GameData/ABGameSingleton.h"
 
 // Sets default values for this component's properties
 UABCharacterStatComponent::UABCharacterStatComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-
-	MaxHP = 200.0f;
-	CurrentHP = MaxHP;
+	CurrentLevel = 1;
 }
 
 
+// Called when the game starts
 void UABCharacterStatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetHP(MaxHP);
+	SetLevelStat(CurrentLevel);
+	SetHp(BaseStat.MaxHp);
 }
 
-void UABCharacterStatComponent::SetHP(float NewHP)
+void UABCharacterStatComponent::SetLevelStat(int32 InNewLevel)
 {
-	CurrentHP = FMath::Clamp<float>(NewHP, 0.0f, MaxHP);
-	OnHPChangedEvent.Broadcast(CurrentHP);
+	CurrentLevel = FMath::Clamp(InNewLevel, 1, UABGameSingleton::Get().CharacterMaxLevel);
+	BaseStat = UABGameSingleton::Get().GetCharacterStat(CurrentLevel);
+	check(BaseStat.MaxHp > 0.0f);
+}
+
+void UABCharacterStatComponent::SetHp(float NewHp)
+{
+	CurrentHp = FMath::Clamp<float>(NewHp, 0.0f, BaseStat.MaxHp);
+
+	OnHpChanged.Broadcast(CurrentHp);
 }
 
 float UABCharacterStatComponent::ApplyDamage(float InDamage)
 {
-	const float PrevHP = CurrentHP;
-	const float ActualDamage = FMath::Max<float>(InDamage, 0);
+	const float PrevHp = CurrentHp;
+	const float ActualDamage = FMath::Clamp<float>(InDamage, 0, InDamage);
 
-	SetHP(PrevHP - ActualDamage);
+	SetHp(PrevHp - ActualDamage);
 
-	if (CurrentHP <= KINDA_SMALL_NUMBER)
+	// 허용하는 작은 값보다 작은 경우, 죽음 처리
+	if (CurrentHp <= KINDA_SMALL_NUMBER)
 	{
-		OnHPZeroEvent.Broadcast();
+		OnHpZero.Broadcast();
 	}
 
 	return ActualDamage;
 }
+
 
