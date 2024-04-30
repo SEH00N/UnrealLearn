@@ -111,9 +111,8 @@ void AABStageGimmick::OnGateTriggerOverlap(UPrimitiveComponent* OverlappedCompon
 
 	if (!bResult)
 	{
-		const FTransform SpawnTransform = FTransform(NewLocation);
+		const FTransform SpawnTransform(NewLocation);
 		AABStageGimmick* NewGimmick = GetWorld()->SpawnActorDeferred<AABStageGimmick>(AABStageGimmick::StaticClass(), SpawnTransform);
-
 		if (NewGimmick)
 		{
 			NewGimmick->SetStageNum(CurrentStageNum + 1);
@@ -193,12 +192,8 @@ void AABStageGimmick::SetChooseNext()
 
 void AABStageGimmick::OnOpponentSpawn()
 {
-	const FVector SpawnLocation = GetActorLocation() + FVector::UpVector * 88.0f;
-	const FTransform SpawnTransform(SpawnLocation);
+	const FTransform SpawnTransform(GetActorLocation() + FVector::UpVector * 88.0f);
 	AABCharacterNonPlayer* ABOpponentCharacter = GetWorld()->SpawnActorDeferred<AABCharacterNonPlayer>(OpponentClass, SpawnTransform);
-
-	//AActor* OpponentActor = GetWorld()->SpawnActor(OpponentClass, &SpawnLocation, &FRotator::ZeroRotator);
-	//AABCharacterNonPlayer* ABOpponentCharacter = Cast<AABCharacterNonPlayer>(OpponentActor);
 
 	if (ABOpponentCharacter)
 	{
@@ -219,8 +214,7 @@ void AABStageGimmick::SpawnRewardBoxes()
 {
 	for (const auto& RewardBoxLocation : RewardBoxLocations)
 	{
-		FVector WorldSpawnLocation = GetActorLocation() + RewardBoxLocation.Value + FVector(0.0f, 0.0f, 30.0f);
-		const FTransform SpawnTransform = FTransform(WorldSpawnLocation);
+		FTransform SpawnTransform(GetActorLocation() + RewardBoxLocation.Value + FVector(0.0f, 0.0f, 30.0f));
 		AABItemBox* RewardBoxActor = GetWorld()->SpawnActorDeferred<AABItemBox>(RewardBoxClass, SpawnTransform);
 
 		if (RewardBoxActor)
@@ -234,7 +228,9 @@ void AABStageGimmick::SpawnRewardBoxes()
 	for (const auto& RewardBox : RewardBoxes)
 	{
 		if (RewardBox.IsValid())
+		{
 			RewardBox.Get()->FinishSpawning(RewardBox.Get()->GetActorTransform());
+		}
 	}
 }
 

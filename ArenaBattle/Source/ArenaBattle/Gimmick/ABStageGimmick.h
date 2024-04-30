@@ -30,17 +30,17 @@ UCLASS()
 class ARENABATTLE_API AABStageGimmick : public AActor
 {
 	GENERATED_BODY()
-
-public:
+	
+public:	
 	// Sets default values for this actor's properties
 	AABStageGimmick();
 
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 
-	// Stage Section
+// Stage Section
 protected:
-	UPROPERTY(VisibleAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = Stage, Meta=(AllowPrivateAccess="true"))
 	TObjectPtr<class UStaticMeshComponent> Stage;
 
 	UPROPERTY(VisibleAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
@@ -49,7 +49,7 @@ protected:
 	UFUNCTION()
 	void OnStageTriggerOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	// Gate Section
+// Gate Section
 protected:
 	UPROPERTY(VisibleAnywhere, Category = Gate, Meta = (AllowPrivateAccess = "true"))
 	TMap<FName, TObjectPtr<class UStaticMeshComponent>> Gates;
@@ -63,11 +63,11 @@ protected:
 	void OpenAllGates();
 	void CloseAllGates();
 
-	// State Section
+// State Section
 protected:
-	UPROPERTY(EditAnywhere, Category = Stage, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category= State, Meta=(AllowPrivateAccess="true"))
 	EStageState CurrentState;
-
+	
 	UPROPERTY()
 	TMap<EStageState, FStageChangedDelegateWrapper> StateChangeActions;
 
@@ -81,8 +81,7 @@ protected:
 	void SetChooseNext();
 
 	FORCEINLINE int32 GetStageNum() const { return CurrentStageNum; }
-	FORCEINLINE void SetStageNum(int32 NewStageNumber) { CurrentStageNum = NewStageNumber; }
-
+	FORCEINLINE void SetStageNum(int32 NewStageNum) { CurrentStageNum = NewStageNum; }
 
 // Fight Section
 protected:

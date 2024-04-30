@@ -25,6 +25,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = Weapon)
 	TSoftObjectPtr<USkeletalMesh> WeaponMesh;
 
-	UPROPERTY(EditAnywhere, Category = "Stat")
+	UPROPERTY(EditAnywhere, Category = Stat)
 	FABCharacterStat ModifierStat;
 };

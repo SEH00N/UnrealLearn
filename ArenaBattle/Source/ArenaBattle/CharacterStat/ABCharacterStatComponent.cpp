@@ -8,6 +8,7 @@
 UABCharacterStatComponent::UABCharacterStatComponent()
 {
 	CurrentLevel = 1;
+	AttackRadius = 30.0f;
 }
 
 
