@@ -7,6 +7,8 @@
 #include "Physics/ABCollision.h"
 #include "Character/ABCharacterNonPlayer.h"
 #include "Item/ABItemBox.h"
+#include "GameFramework/GameModeBase.h"
+#include "Interface/ABGameModeInterface.h"
 
 // Sets default values
 AABStageGimmick::AABStageGimmick()
@@ -207,6 +209,17 @@ void AABStageGimmick::OnOpponentSpawn()
 
 void AABStageGimmick::OnOpponentDestroyed(AActor* DestroyedActor)
 {
+	AGameModeBase* GameModeBase = GetWorld()->GetAuthGameMode();
+	IABGameModeInterface* ABGameMode = Cast<IABGameModeInterface>(GameModeBase);
+	if (ABGameMode)
+	{
+		ABGameMode->OnPlayerScore(CurrentStageNum);
+		if (ABGameMode->IsGameCleared())
+		{
+			return;
+		}
+	}
+
 	SetState(EStageState::REWARD);
 }
 

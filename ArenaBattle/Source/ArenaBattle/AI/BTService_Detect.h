@@ -18,5 +18,5 @@ public:
 	UBTService_Detect();
 
 protected:
-	void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSecods) override;
+	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 };

@@ -15,6 +15,8 @@
 #include "UI/ABHpBarWidget.h"
 #include "Item/ABItemData.h"
 #include "Item/ABWeaponItemData.h"
+#include "Item/ABPotionItemData.h"
+#include "Item/ABScrollItemData.h"
 
 // Sets default values
 AABCharacterBase::AABCharacterBase()
@@ -40,7 +42,7 @@ AABCharacterBase::AABCharacterBase()
 	// Mesh
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -100.0f), FRotator(0.0f, -90.0f, 0.0f));
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-	GetMesh()->SetCollisionProfileName(TEXT("CharacterMesh"));
+	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterMeshRef(TEXT("/Game/InfinityBladeWarriors/Character/CompleteCharacters/SK_CharM_Cardboard.SK_CharM_Cardboard"));
 	if (CharacterMeshRef.Object)
@@ -119,6 +121,7 @@ void AABCharacterBase::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	Stat->OnHpZero.AddUObject(this, &AABCharacterBase::SetDead);
+	Stat->OnStatChanged.AddUObject(this, &AABCharacterBase::ApplyStat);
 }
 
 void AABCharacterBase::TakeItem(UABItemData* InItemData)
@@ -142,18 +145,30 @@ void AABCharacterBase::EquipWeapon(UABItemData* InItemData)
 		}
 
 		Weapon->SetSkeletalMesh(WeaponItemData->WeaponMesh.Get());
-		Stat->SetMoidifierStat(WeaponItemData->ModifierStat);
+		Stat->SetModifierStat(WeaponItemData->ModifierStat);
 	}
 }
 
 void AABCharacterBase::DrinkPotion(UABItemData* InItemData)
 {
 	UE_LOG(LogTemp, Log, TEXT("Drink Potion"));
+
+	UABPotionItemData* PotionItemData = Cast<UABPotionItemData>(InItemData);
+	if (PotionItemData)
+	{
+		Stat->HealHp(PotionItemData->HealAmount);
+	}
 }
 
 void AABCharacterBase::ReadScroll(UABItemData* InItemData)
 {
 	UE_LOG(LogTemp, Log, TEXT("Read Scroll"));
+
+	UABScrollItemData* ScrollItemData = Cast<UABScrollItemData>(InItemData);
+	if (ScrollItemData)
+	{
+		Stat->AddBaseStat(ScrollItemData->BaseStat);
+	}
 }
 
 void AABCharacterBase::SetupCharacterWidget(UABUserWidget* InUserWidget)
@@ -162,10 +177,11 @@ void AABCharacterBase::SetupCharacterWidget(UABUserWidget* InUserWidget)
 
 	if (HpBarWidget)
 	{
-		HpBarWidget->SetMaxHp(Stat->GetTotalStat().MaxHp);
+		HpBarWidget->UpdateStat(Stat->GetBaseStat(), Stat->GetModifierStat());
 		HpBarWidget->UpdateHpBar(Stat->GetCurrentHp());
 
 		Stat->OnHpChanged.AddUObject(HpBarWidget, &UABHpBarWidget::UpdateHpBar);
+		Stat->OnStatChanged.AddUObject(HpBarWidget, &UABHpBarWidget::UpdateStat);
 	}
 }
 
@@ -177,6 +193,12 @@ int32 AABCharacterBase::GetLevel()
 void AABCharacterBase::SetLevel(int32 InNewLevel)
 {
 	Stat->SetLevelStat(InNewLevel);
+}
+
+void AABCharacterBase::ApplyStat(const FABCharacterStat& BaseStat, const FABCharacterStat& ModifierStat)
+{
+	float MovementSpeed = (BaseStat + ModifierStat).MovementSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = MovementSpeed;
 }
 
 void AABCharacterBase::AttackHitCheck()
